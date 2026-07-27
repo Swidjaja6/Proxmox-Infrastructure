@@ -1,0 +1,64 @@
+volumes:
+  prometheus_data:  
+  grafana-data: {}
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus 
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - monitoring
+
+#  node-exporter:
+#    image: prom/node-exporter:latest
+#    container_name: node-exporter
+#    restart: unless-stopped
+#    ports:
+#      - "9100:9100"
+#    volumes:
+#      - /proc:/host/proc:ro
+#      - /sys:/host/sys:ro
+#      - /:/rootfs:ro
+#    command:
+#      - '--path.procfs=/host/proc'
+#      - '--path.sysfs=/host/sys'
+#      - '--path.rootfs=/rootfs'
+#    networks:
+#      - monitoring
+  pve-exporter:
+    image: prompve/prometheus-pve-exporter
+    container_name: pve-exporter
+    restart: unless-stopped
+    ports:
+      - "9221:9221" 
+    volumes:
+      - ./prometheus/pve/pve.yml:/etc/prometheus/pve.yml
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    driver: bridge
