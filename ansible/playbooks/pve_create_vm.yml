@@ -1,0 +1,18 @@
+- hosts: 100.87.110.119
+  become: false
+  gather_facts: false
+  vars_files:
+    ../inventories/group_vars/all/secrets.yml
+  tasks:
+
+  - name: Create new VM with minimal options
+    vars:
+      ansible_python_interpreter: /usr/bin/python3
+    proxmox_kvm:
+      api_user: ansy@pam
+      api_token_id: "{{ token_id }}"
+      api_token_secret: "{{ token_secret }}"
+      api_host: 100.87.110.119
+      validate_certs: false
+      node: pve
+      name: vmtest

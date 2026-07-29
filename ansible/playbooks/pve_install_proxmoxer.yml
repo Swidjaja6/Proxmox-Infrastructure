@@ -1,0 +1,21 @@
+- hosts: pvenodes
+  become: true
+  tasks:
+
+    - name: Remove the outdated Debian system package
+      ansible.builtin.apt:
+        name: python3-proxmoxer
+        state: absent
+
+    - name: Install pip for Python 3
+      ansible.builtin.apt:
+        name: python3-pip
+        state: present
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install latest proxmoxer using pip
+      ansible.builtin.pip:
+        name: proxmoxer
+        state: latest
+        extra_args: --break-system-packages

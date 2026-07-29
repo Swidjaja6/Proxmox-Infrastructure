@@ -1,0 +1,29 @@
+- hosts: pvenodes
+  vars_files:
+    ../inventories/group_vars/all/secrets.yml
+  tasks: 
+
+  - name: install sudo package
+    apt: 
+      name: sudo
+      update_cache: yes
+      cache_valid_time: 3600
+      state: latest
+
+  - name: create Ansible user
+    user:
+      name: ansy
+      shell: '/bin/bash'
+
+  - name: add Ansible ssh key
+    authorized_key:
+      user: ansy
+      key: "{{ ansy_ssh }}"
+    
+  - name: add ansy to sudo
+    copy:
+      src: sudoer_ansible
+      dest: /etc/sudoers.d/ansy
+      owner: root
+      group: root
+      mode: 0440
