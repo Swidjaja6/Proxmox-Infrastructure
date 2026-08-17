@@ -1,2 +1,4 @@
 *.env
 sudoer_ansible
+ansible/inventories/group_vars/all/secrets.yml
+secrets.yml
